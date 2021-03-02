@@ -1,11 +1,15 @@
 import React from 'react';
-import ReactDom from 'react-dom';
+import ReactDOM from 'react-dom';
+
+import { render, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
 
 import { CalculadoraService } from '../services/Calculadora.service';
+import { Calculadora } from '../components/Calculadora';
+
+const [ handleCalcular, handleConcatNumber, SUM, SUB, DIV, MUL ] = CalculadoraService();
 
 describe('Teste do CalculadoraService', () => {
-
-    const [ handleCalcular, handleConcatNumber, SUM, SUB, DIV, MUL ] = CalculadoraService();
 
     it('Deve garantir que 1 + 4 = 5', () => {
         let soma = handleCalcular(1, 4, SUM);
@@ -32,4 +36,72 @@ describe('Teste do CalculadoraService', () => {
         expect(soma).toEqual(0);
     });
 
+});
+
+describe('Teste da Calculadora', () => {
+
+    it('Deve renderizar sem error', () => {
+        const div = document.createElement('div');
+        ReactDOM.render(<Calculadora />, div);
+        ReactDOM.unmountComponentAtNode(div);
+    });
+
+    it('Deve limpar o campo de números', () => {
+
+        const { getByTestId, getByText } = render(<Calculadora />);
+        
+        fireEvent.click(getByText('2'));
+        fireEvent.click(getByText('C'));
+
+        expect(getByTestId('txtNumeros')).toHaveValue('0');
+    });
+
+    it('Deve somar 1 + 1', () => {
+        
+        const { getByTestId, getByText } = render(<Calculadora />);
+
+        fireEvent.click(getByText('1'));
+        fireEvent.click(getByText('+'));
+        fireEvent.click(getByText('1'));
+        fireEvent.click(getByText('='));
+
+        expect(getByTestId('txtNumeros')).toHaveValue('2');
+    });
+
+
+    it('Deve somar 1 - 1', () => {
+        
+        const { getByTestId, getByText } = render(<Calculadora />);
+
+        fireEvent.click(getByText('1'));
+        fireEvent.click(getByText('-'));
+        fireEvent.click(getByText('1'));
+        fireEvent.click(getByText('='));
+
+        expect(getByTestId('txtNumeros')).toHaveValue('0');
+    });
+
+    it('Deve diidir 1 / 1', () => {
+        
+        const { getByTestId, getByText } = render(<Calculadora />);
+
+        fireEvent.click(getByText('1'));
+        fireEvent.click(getByText('/'));
+        fireEvent.click(getByText('1'));
+        fireEvent.click(getByText('='));
+
+        expect(getByTestId('txtNumeros')).toHaveValue('1');
+    });
+
+    it('Deve multiplicar 1 * 1', () => {
+        
+        const { getByTestId, getByText } = render(<Calculadora />);
+
+        fireEvent.click(getByText('1'));
+        fireEvent.click(getByText('*'));
+        fireEvent.click(getByText('1'));
+        fireEvent.click(getByText('='));
+
+        expect(getByTestId('txtNumeros')).toHaveValue('1');
+    });
 });
