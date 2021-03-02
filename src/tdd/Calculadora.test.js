@@ -5,7 +5,7 @@ import { CalculadoraService } from '../services/Calculadora.service';
 
 describe('Teste do CalculadoraService', () => {
 
-    const [ handleCalcular, SUM, SUB, DIV, MUL ] = CalculadoraService();
+    const [ handleCalcular, handleConcatNumber, SUM, SUB, DIV, MUL ] = CalculadoraService();
 
     it('Deve garantir que 1 + 4 = 5', () => {
         let soma = handleCalcular(1, 4, SUM);

@@ -9,19 +9,71 @@ import {
     Form 
 } from 'react-bootstrap';
 
+import { CalculadoraService } from '../services/Calculadora.service';
+
 import styles from '../styles/Calculadora.module.css';
 
 export function Calculadora() {
 
+    const [ handleCalcular, handleConcatNumber, SUM, SUB, DIV, MUL ] = CalculadoraService();
+
     const [txtNumeros, setTxtNumeros] = useState('0');
+    const [number1, setNumber1] = useState('0');
+    const [number2, setNumber2] = useState(null);
+    const [operation, setOperation] = useState(null);
 
     function handleAddNumber(number) {
-        setTxtNumeros(txtNumeros + String(number));
+        let result;
+
+        if (operation === null) {
+            result = handleConcatNumber(number1, number);
+            setNumber1(result);
+        } else {
+            
+            result = handleConcatNumber(number2, number);
+            setNumber2(result);
+        }
+
+        setTxtNumeros(result);
     }
 
-    function handleOperation(operation) {
-        setTxtNumeros(operation);
+    function handleOperation(op) {
+        // apenas define a operação caso ela não exista
+
+        if (operation === null) {
+            setOperation(op);
+            return;
+        }
+
+        // caso operação estiver definida e o número 2 selecionado
+        // realiza o calculo da operação
+
+        if (number2 !== null) {
+            const result = handleCalcular(Number(number1), Number(number2), operation);
+            setOperation(op);
+            setNumber1(String(result));
+            setNumber2(null);
+            setTxtNumeros(String(result));
+        }
+
     }
+
+    function handleActionCalcular() {
+        if (number2 === null){
+            return;
+        }
+
+        const result = handleCalcular(Number(number1), Number(number2), operation)
+        setTxtNumeros(result);
+    }
+
+    function handleReset() {
+        setTxtNumeros('0');
+        setNumber1('0')
+        setNumber2(null);
+        setOperation(null);
+    }
+
 
     return (
         <Jumbotron 
@@ -38,7 +90,7 @@ export function Calculadora() {
             <Container>
                 <Row>
                     <Col xs="3">
-                        <Button variant="danger">
+                        <Button variant="danger" onClick={handleReset}>
                             C
                         </Button>
                     </Col>
@@ -140,13 +192,13 @@ export function Calculadora() {
                     </Col>
                     
                     <Col>
-                        <Button variant="light" onClick={() => handleOperation('.')}>
+                        <Button variant="light" onClick={() => handleAddNumber('.')}>
                             .
                         </Button>
                     </Col>
 
                     <Col>
-                        <Button variant="success" onClick={() => handleOperation('=')}>
+                        <Button variant="success" onClick={handleActionCalcular}>
                             =
                         </Button>
                     </Col>
